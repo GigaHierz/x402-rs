@@ -324,8 +324,11 @@ impl Eip155MetaTransactionProvider for Eip155ChainProvider {
                     self.nonce_manager.reset_nonce(from_address).await;
                     if attempt == 0 && is_fee_cap_below_base_fee(&e.to_string()) {
                         attempt += 1;
+                        // Not `error=%e`: a transport error's Display embeds the
+                        // request URL, which for hosted providers carries the API
+                        // key (#114). The classifier already says what happened.
                         #[cfg(feature = "telemetry")]
-                        tracing::warn!(error=%e, "fee cap below base fee at submission; refilling fees and resending once");
+                        tracing::warn!(chain=%self.chain_id(), "fee cap below base fee at submission; refilling fees and resending once");
                         continue;
                     }
                     return Err(MetaTransactionSendError::Transport(e));
