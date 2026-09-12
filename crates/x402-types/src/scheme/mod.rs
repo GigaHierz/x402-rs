@@ -429,7 +429,9 @@ mod redact_urls_tests {
                 format!(
                     "HTTP error 429 from https://rpc.example.io/?apikey={secret}: too many requests"
                 ),
-                "HTTP error 429 from https://rpc.example.io/<redacted>: too many requests"
+                // Everything up to the next whitespace goes with the query, colon included:
+                // a secret may contain one, and losing punctuation costs nothing.
+                "HTTP error 429 from https://rpc.example.io/<redacted> too many requests"
                     .to_string(),
             ),
             (
